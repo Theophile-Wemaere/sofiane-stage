@@ -23,8 +23,8 @@ def show_img(img):
 
 def generate_rectangle():
     
-    if not os.path.exists("outputs/rectangles"):
-        os.mkdir("outputs/rectangles")
+    if not os.path.exists("dataset/rectangle"):
+        os.mkdir("dataset/rectangle")
     
     print("Generating rectangles...")
 
@@ -37,14 +37,15 @@ def generate_rectangle():
 
             # if show_img(img):
             #     break
-
-            cv2.imwrite(f"outputs/rectangles/rectangle_{i}.jpg", img, [cv2.IMWRITE_JPEG_QUALITY, 90])
+            
+            gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            cv2.imwrite(f"dataset/rectangle/rectangle_image{i}.jpg", gray_img, [cv2.IMWRITE_JPEG_QUALITY, 90])
             bar()
 
 def generate_ellipse():
 
-    if not os.path.exists("outputs/ellipses"):
-        os.mkdir("outputs/ellipses")
+    if not os.path.exists("dataset/ellipse"):
+        os.mkdir("dataset/ellipse")
 
         print("Generating ellipses...")
 
@@ -52,16 +53,17 @@ def generate_ellipse():
         for i in range(0,nb_ellipse):
             img = np.zeros((dim,dim,3), np.uint8)
             pt1 = (random.randint(0, dim-min_size), random.randint(0, dim-min_size))
-            pt2 = (random.randint(0 + min_size, 256-min_size), random.randint(0 + min_size, 256-min_size))
+            pt2 = (random.randint(0 + min_size, int(dim/2)-min_size), random.randint(0 + min_size, int(dim/2)-min_size))
             cv2.ellipse(img,pt1,pt2,0,0,360,WHITE,-1)
 
-            cv2.imwrite(f"outputs/ellipses/ellipse_{i}.jpg", img, [cv2.IMWRITE_JPEG_QUALITY, 90])
+            gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            cv2.imwrite(f"dataset/ellipse/ellipse_image{i}.jpg", gray_img, [cv2.IMWRITE_JPEG_QUALITY, 90])
             bar()
 
 def generate_triangle():
 
-    if not os.path.exists("outputs/triangles"):
-        os.mkdir("outputs/triangles")
+    if not os.path.exists("dataset/triangle"):
+        os.mkdir("dataset/triangle")
 
     print("Generating triangles...")
 
@@ -75,17 +77,18 @@ def generate_triangle():
             pts = pts.reshape((-1,1,2))
             cv2.fillPoly(img, np.array([pts]),WHITE )
 
-            cv2.imwrite(f"outputs/triangles/triangle_{i}.jpg", img, [cv2.IMWRITE_JPEG_QUALITY, 90])
+            gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            cv2.imwrite(f"dataset/triangle/triangle_image{i}.jpg", gray_img, [cv2.IMWRITE_JPEG_QUALITY, 90])
             bar()
 
 def main():
 
-    if not os.path.exists("outputs"):
-        os.mkdir("outputs")
+    if not os.path.exists("dataset"):
+        os.mkdir("dataset")
 
     generate_rectangle()
-    generate_ellipse()
-    generate_triangle()
+    # generate_ellipse()
+    # generate_triangle()
 
 if __name__ == "__main__":
     try:

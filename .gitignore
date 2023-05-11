@@ -1,1 +1,3 @@
-outputs/
+dataset/
+dataset-test/
+__pycache__/
