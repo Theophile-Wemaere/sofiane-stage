@@ -38,11 +38,11 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 # load the dataset
 print("[INFO] loading dataset...")
 transform = transforms.Compose(
-[transforms.ToTensor(),
- transforms.Resize(size=(BATCH_SIZE,BATCH_SIZE))])
+[transforms.ToTensor()])
+ #transforms.Resize(size=(BATCH_SIZE,BATCH_SIZE))])
 
 trainData = ImageFolder(root="dataset", transform=transform)
-testData = ImageFolder(root="dataset", transform=transform)
+testData = ImageFolder(root="dataset", transform=transforms.ToTensor())
 
 # calculate the train/validation split
 print("[INFO] generating the train/validation split...")
@@ -160,8 +160,8 @@ with torch.no_grad():
 		pred = model(x)
 		preds.extend(pred.argmax(axis=1).cpu().numpy())
 # generate a classification report
-print(classification_report(testData.targets.cpu().numpy(),
-	np.array(preds), target_names=testData.classes))
+# print(classification_report(testData.targets.cpu().numpy(),
+# 	np.array(preds), target_names=testData.classes))
 
 # plot the training loss and accuracy
 plt.style.use("ggplot")
