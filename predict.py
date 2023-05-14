@@ -15,10 +15,14 @@ ap.add_argument("-m", "--model", type=str, required=True,
 args = vars(ap.parse_args())
 
 # set the device we will be using to test the model
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+dev = "cpu"
+if torch.cuda.is_available():
+    dev = "cuda"
+print(dev)
+device = torch.device(dev)
 
 # load the model and set it to evaluation mode
-model = torch.load(args["model"]).to(device)
+model = torch.load(args["model"],map_location=torch.device(dev)).to(device)
 model.eval()
 
 classes = ["ellipse","rectangle","triangle"]
