@@ -18,7 +18,6 @@ args = vars(ap.parse_args())
 dev = "cpu"
 if torch.cuda.is_available():
     dev = "cuda"
-print(dev)
 device = torch.device(dev)
 
 # load the model and set it to evaluation mode
