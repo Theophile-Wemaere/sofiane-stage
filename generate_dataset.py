@@ -6,7 +6,7 @@ import sys
 from alive_progress import alive_bar
 
 min_size = 10
-dim = 64
+dim = 512
 WHITE = (255,255,255)
 
 nb_rectangle = 1000
@@ -22,8 +22,10 @@ def show_img(img):
         cv2.destroyAllWindows()
 
 def write_img(img,path):
+    # https://stackoverflow.com/questions/7624765/converting-an-opencv-image-to-black-and-white
     gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    cv2.imwrite(path, gray_img, [cv2.IMWRITE_JPEG_QUALITY, 90])
+    (thresh, bw_img) = cv2.threshold(gray_img, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
+    cv2.imwrite(path, bw_img, [cv2.IMWRITE_JPEG_QUALITY, 90])
 
 
 def rectangle():
@@ -90,6 +92,14 @@ def generate_triangle():
             img = triangle() 
             write_img(img,f"dataset/triangle/triangle_image{i}.jpg")
             bar()
+
+def generate_random():
+
+    functions = [(rectangle,"rectangle"),(ellipse,"ellipse"),(triangle,"triangle")]
+    func = random.choice(functions)
+    img = func[0]()
+    label = func[1]
+    return img,label    
 
 def main():
 

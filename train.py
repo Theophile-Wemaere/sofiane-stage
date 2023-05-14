@@ -1,4 +1,5 @@
 # set the matplotlib backend so figures can be saved in the background
+import cv2
 import matplotlib
 matplotlib.use("Agg")
 # import the necessary packages
@@ -6,7 +7,6 @@ from functions.lenet import LeNet
 from sklearn.metrics import classification_report
 from torch.utils.data import random_split
 from torch.utils.data import DataLoader
-from torchvision.transforms import ToTensor
 from torchvision.datasets import ImageFolder
 from torchvision.transforms import transforms
 from torch.optim import Adam
@@ -16,6 +16,7 @@ import numpy as np
 import argparse
 import torch
 import time
+
 
 # construct the argument parser and parse the arguments
 ap = argparse.ArgumentParser()
@@ -29,20 +30,24 @@ args = vars(ap.parse_args())
 INIT_LR = 1e-3
 BATCH_SIZE = 64
 EPOCHS = 10
+
 # define the train and val splits
 TRAIN_SPLIT = 0.75
 VAL_SPLIT = 1 - TRAIN_SPLIT
+
 # set the device we will be using to train the model
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # load the dataset
 print("[INFO] loading dataset...")
-transform = transforms.Compose(
-[transforms.ToTensor()])
- #transforms.Resize(size=(BATCH_SIZE,BATCH_SIZE))])
+transform = transforms.Compose([
+	transforms.ToTensor(),
+	transforms.Grayscale(num_output_channels=1),
+	transforms.Resize(size=(BATCH_SIZE,BATCH_SIZE))
+	])
 
 trainData = ImageFolder(root="dataset", transform=transform)
-testData = ImageFolder(root="dataset", transform=transforms.ToTensor())
+testData = ImageFolder(root="dataset", transform=transform)
 
 # calculate the train/validation split
 print("[INFO] generating the train/validation split...")
@@ -54,18 +59,22 @@ numValSamples = int(len(trainData) * VAL_SPLIT)
 trainDataLoader = DataLoader(trainData, shuffle=True,batch_size=BATCH_SIZE)
 valDataLoader = DataLoader(valData, batch_size=BATCH_SIZE)
 testDataLoader = DataLoader(testData, batch_size=BATCH_SIZE)
+
 # calculate steps per epoch for training and validation set
 trainSteps = len(trainDataLoader.dataset) // BATCH_SIZE
 valSteps = len(valDataLoader.dataset) // BATCH_SIZE
 
 # initialize the LeNet model
 print("[INFO] initializing the LeNet model...")
+
 model = LeNet(
-	numChannels=3,
+	numChannels=1, # 1 for gray image, 3 for RGB
 	classes=len(trainData.dataset.classes)).to(device)
+
 # initialize our optimizer and loss function
 opt = Adam(model.parameters(), lr=INIT_LR)
 lossFn = nn.NLLLoss()
+
 # initialize a dictionary to store training history
 H = {
 	"train_loss": [],
@@ -79,27 +88,35 @@ startTime = time.time()
 
 # loop over our epochs
 for e in range(0, EPOCHS):
+
 	# set the model in training mode
 	model.train()
+
 	# initialize the total training and validation loss
 	totalTrainLoss = 0
 	totalValLoss = 0
+
 	# initialize the number of correct predictions in the training
 	# and validation step
 	trainCorrect = 0
 	valCorrect = 0
+
 	# loop over the training set
 	for (x, y) in trainDataLoader:
+
 		# send the input to the device
 		(x, y) = (x.to(device), y.to(device))
+
 		# perform a forward pass and calculate the training loss
 		pred = model(x)
 		loss = lossFn(pred, y)
+
 		# zero out the gradients, perform the backpropagation step,
 		# and update the weights
 		opt.zero_grad()
 		loss.backward()
 		opt.step()
+
 		# add the loss to the total training loss so far and
 		# calculate the number of correct predictions
 		totalTrainLoss += loss
