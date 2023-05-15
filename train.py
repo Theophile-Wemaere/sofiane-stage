@@ -18,13 +18,20 @@ import torch
 import time
 
 
+model = "output/model.pth"
+plot = "output/plot.png"
+
 # construct the argument parser and parse the arguments
 ap = argparse.ArgumentParser()
-ap.add_argument("-m", "--model", type=str, required=True,
-	help="path to output trained model")
-ap.add_argument("-p", "--plot", type=str, required=True,
-	help="path to output loss/accuracy plot")
+ap.add_argument("-m", "--model", type=str, help="path to output trained model")
+ap.add_argument("-p", "--plot", type=str, help="path to output loss/accuracy plot")
 args = vars(ap.parse_args())
+
+if args["model"] is None:
+    args["model"] = model
+
+if args["plot"] is None:
+    args["plot"] = plot
 
 # define training hyperparameters
 INIT_LR = 1e-3
