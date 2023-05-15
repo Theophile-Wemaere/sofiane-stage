@@ -59,7 +59,7 @@ with torch.no_grad():
             if gtLabel != predLabel:
                 errors += 1
 
-            cv2.putText(img, gtLabel, (2, 25), cv2.FONT_HERSHEY_SIMPLEX, 0.95, color, 2)
+            cv2.putText(img, predLabel, (2, 25), cv2.FONT_HERSHEY_SIMPLEX, 0.95, color, 2)
 
             # display the result in terminal and show the input image
             print("[INFO] ground truth label: {}, predicted label: {}".format(gtLabel, predLabel))
