@@ -8,11 +8,16 @@ import torch
 
 from generate_dataset import *
 
+model = "output/model.pth"
+
 # construct the argument parser and parse the arguments
 ap = argparse.ArgumentParser()
-ap.add_argument("-m", "--model", type=str, required=True,
+ap.add_argument("-m", "--model", type=str,
 	help="path to the trained PyTorch model")
 args = vars(ap.parse_args())
+
+if args["model"] is None:
+    args["model"] = model
 
 # set the device we will be using to test the model
 dev = "cpu"
